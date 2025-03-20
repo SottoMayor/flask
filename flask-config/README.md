@@ -128,7 +128,7 @@ Utilização de um container para rodar o banco de dados localmente, por meio do
 
 __SGBD__: MySQL
 
-__URI__: `"mysql+mysqlclient://user:password@mysql_db:3306/test_db"`  
+__URI__: `"mysql://user:password@mysql_db:3306/test_db"`  
    - Variáveis de ambiente configuradas no `docker-compose.yml`. 
    - _mysql_db_:
       - nome do serviço definido no `docker-compose.yml`. 
@@ -160,11 +160,11 @@ Configuração no código:
      Crie a pasta `models` para abrigar cada model.
    - **Timestamp Model:**:
       - Importe a instância `db` de `database/connection.py`.
-      - Crie a classe abstrata `TimestampModel` configurando as propriedades `created_at` e `updated_at`.
+      - Crie a classe abstrata `TimestampModel` configurando as propriedades `created` e `updated`.
    - **Os demais models:**  
      - Em cada model, importe `TimestampModel`.
      - Cada classe representa uma tabela, elas devem herdar de `TimestampModel`.
-        - Assim, todo model também terá `created_at` e `updated_at`.
+        - Assim, todo model também terá `created` e `updated`.
      - Defina o nome da tabela com `__tablename__`.
      - Cada propriedade da classe é uma coluna da tabela definida por `mapped_column`.
        - O primeiro argumento geralmente é o tipo (ex: `Integer`, `String`, etc).
@@ -178,3 +178,63 @@ Configuração no código:
       - `SQLALCHEMY_DATABASE_URI`
       - `SQLALCHEMY_TRACK_MODIFICATIONS`
    - A inicialização do DB com `db.init_app(app)` deve ocorrer após a definição das variáveis de ambiente.
+
+## Migrations
+
+[Documentação oficial do flask-migrate](https://flask-migrate.readthedocs.io/en/latest/)
+
+1. **Instalação do Flask-Migrate**  
+   ```bash
+   pip install Flask-Migrate
+   ```
+
+2. **Configuração das Migrations**  
+   - Importe e inicialize o `Migrate` no `app.py` após a conexão com o DB.
+   - **IMPORTANTE:** Os models devem estar importados no `app.py`, senão as migrations não conseguem detectá-los.
+
+3. **Comandos da CLI do Flask para Migrations**
+
+   - **Inicializar as migrations** (Criação da pasta `database/migrations`):
+     ```bash
+     flask db init -d database/migrations
+     ```
+
+   - **Criar novas migrations** (Baseado nas alterações nos models):
+     ```bash
+     flask db migrate -d database/migrations
+     ```
+     - Se um **model for novo** → `CREATE TABLE`
+     - Se um **model for alterado** → `ALTER TABLE`
+
+   - **Aplicar as migrations ao banco de dados**:
+     ```bash
+     flask db upgrade -d database/migrations
+     ```
+
+4. **Verificando migrations aplicadas**
+   - Última migration aplicada:
+     ```bash
+     flask db current -d database/migrations
+     ```
+   - Últimas migrations aplicadas:
+     ```bash
+     flask db heads -d database/migrations
+     ```
+   - Histórico completo das migrations:
+     ```bash
+     flask db history -d database/migrations
+     ```
+
+5. **Rollback (Reverter migrations)**
+   - **Reverter a última migration**:
+     ```bash
+     flask db downgrade -d database/migrations
+     ```
+   - **Reverter para um ID específico** (Dica: verifique as migrations aplicadas):
+     ```bash
+     flask db downgrade <id_migration> -d database/migrations
+     ```
+   - **Reverter todas as migrations (reset do DB)**:
+     ```bash
+     flask db downgrade base -d database/migrations
+     ```

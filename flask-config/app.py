@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_cors import CORS
 from database.connection import db
+from flask_migrate import Migrate
+from models import UserModel
 
 app = Flask(__name__)
 
@@ -15,6 +17,9 @@ FLASK_PORT = app.config['FLASK_PORT']
 
 # DB
 db.init_app(app)
+
+# Migrations
+migrate = Migrate(app, db)
 
 @app.route('/')
 def hello_world():
