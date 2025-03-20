@@ -52,3 +52,21 @@ meu_app/
 
 - **Instalar Dependências do requirements.txt:**  
   `pip install -r requirements.txt`
+
+## Instalação e Configuração Básica do Flask
+
+[Documentação oficial do Flask](https://flask.palletsprojects.com/en/stable/)
+
+1. **Instalação**  
+   ```bash
+   pip install Flask
+   ```
+
+2. **Arquivo de Entrada `app.py`**   
+   Responsável por centralizar as configurações e extensões (variáveis de ambiente, blueprints, migrations, seeds, etc)
+
+   Arquivo básico:
+      - Importe e instancie o Flask.
+      - Defina uma rota `[GET] /` para confirmar que o app está funcionando.
+        
+   Porta padrão do app: 5000
