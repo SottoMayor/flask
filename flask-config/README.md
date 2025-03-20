@@ -70,3 +70,20 @@ meu_app/
       - Defina uma rota `[GET] /` para confirmar que o app está funcionando.
         
    Porta padrão do app: 5000
+
+## CORS
+[Documentação oficial do Flask-Cors](https://pypi.org/project/flask-cors/)
+
+1. **Instalação do flask-cors**  
+   ```bash
+   pip install flask-cors
+   ```
+
+2. **Configuração**  
+   - No arquivo de entrada (`app.py`), importe e aplique o CORS à aplicação:
+
+   - Para definir configurações específicas (por exemplo, limitar origens para certas rotas), use a prop. resources:
+   ```python
+   CORS(app, resources={r"/api/*": {"origins": "http://example.com"}})
+   ```
+
