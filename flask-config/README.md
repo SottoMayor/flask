@@ -121,3 +121,60 @@ meu_app/
 
 3. **Observação:**  
    É comum que algumas variáveis se repitam entre os arquivos `.flaskenv` e `.env`.  
+
+## Conexão com o Banco de Dados via SQLAlchemy
+
+Utilização de um container para rodar o banco de dados localmente, por meio do `docker-compose.yml`.
+
+__SGBD__: MySQL
+
+__URI__: `"mysql+mysqlclient://user:password@mysql_db:3306/test_db"`  
+   - Variáveis de ambiente configuradas no `docker-compose.yml`. 
+   - _mysql_db_:
+      - nome do serviço definido no `docker-compose.yml`. 
+      - Pode funcionar se colocar `localhost` em seu lugar, se estiver rodando o flask no modo de desenvolvimento.
+
+Configuração no código:
+
+[Documentação oficial do Flask-SqlAlchemy](https://flask-sqlalchemy.readthedocs.io/en/stable/)   
+
+[Documentação oficial do MySqlClient](https://pypi.org/project/mysqlclient/)   
+
+1. **Pacotes Necessários**  
+   - **Flask-SQLAlchemy** (já inclui o SQLAlchemy):  
+     ```bash
+     pip install Flask-SQLAlchemy
+     ```
+   - **Driver do Banco:**  
+     Para o MySQL, por exemplo, instale o `mysqlclient`.
+     ```bash
+     pip install mysqlclient
+     ```
+
+2. **Conexão com o Banco**  
+   - Crie um arquivo `database/connection.py` para centralizar a conexão com o banco.  
+   - Nesse arquivo, importe e instancie o SQLAlchemy.
+     
+3. **Models**  
+   - **Estrutura:**  
+     Crie a pasta `models` para abrigar cada model.
+   - **Timestamp Model:**:
+      - Importe a instância `db` de `database/connection.py`.
+      - Crie a classe abstrata `TimestampModel` configurando as propriedades `created_at` e `updated_at`.
+   - **Os demais models:**  
+     - Em cada model, importe `TimestampModel`.
+     - Cada classe representa uma tabela, elas devem herdar de `TimestampModel`.
+        - Assim, todo model também terá `created_at` e `updated_at`.
+     - Defina o nome da tabela com `__tablename__`.
+     - Cada propriedade da classe é uma coluna da tabela definida por `mapped_column`.
+       - O primeiro argumento geralmente é o tipo (ex: `Integer`, `String`, etc).
+       - As constraints (como `primary_key=True`, `nullable=False`, `unique=True`) são passadas como kwargs.
+   - **Facilidade de Importação:**  
+        - Crie um arquivo `models/__init__.py` que importe todos os models para facilitar o acesso em outras partes do projeto.
+        - O `TimestampModel` não precisa ser importado.
+
+4. **Conexão do DB no `app.py`**  
+   - Configure as variáveis de ambiente do SqlAlchemy antes de inicializar o app.
+      - `SQLALCHEMY_DATABASE_URI`
+      - `SQLALCHEMY_TRACK_MODIFICATIONS`
+   - A inicialização do DB com `db.init_app(app)` deve ocorrer após a definição das variáveis de ambiente.
