@@ -87,3 +87,37 @@ meu_app/
    CORS(app, resources={r"/api/*": {"origins": "http://example.com"}})
    ```
 
+## Variáveis de Ambiente
+[Documentação oficial do python-dotenv](https://pypi.org/project/python-dotenv/)
+
+1. **Instalação do python-dotenv**  
+  ```bash
+   pip install python-dotenv
+   ```
+
+2. **Arquivos de Ambiente (.flaskenv e .env)**  
+   - **.flaskenv:**  
+      - Armazena variáveis específicas para o Flask (ex: FLASK_APP, FLASK_ENV)
+      - usado para rodar o ambiente de desenvolvimento com `flask run`.
+     
+   - **.env:**  
+     Contém variáveis sensíveis e configurações gerais (secrets, DB, etc).  
+     - Crie uma pasta `settings` com um arquivo `env.py` para declarar essas variáveis.
+     - Carregue o `env.py` no `app.py` logo após instanciar o Flask, para o reconhecimento das variáveis.
+     - Extração de variáveis com acesso direto à instância `app` do Flask:   
+          Como no próprio arquivo de entrada `app.py`.
+          ```bash
+          ENV_VAR = app.config['ENV_VAR']
+          ```
+     - Extração de variáveis sem acesso direto à instância `app` do Flask:   
+          Como em blueprints ou migrations.
+          ```bash
+          from flask import current_app
+          .
+          .
+          .
+          ENV_VAR = current_app.config.get('ENV_VAR')
+          ```
+
+3. **Observação:**  
+   É comum que algumas variáveis se repitam entre os arquivos `.flaskenv` e `.env`.  
