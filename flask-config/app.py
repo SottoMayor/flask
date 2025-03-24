@@ -3,6 +3,7 @@ from flask_cors import CORS
 from database.connection import db
 from flask_migrate import Migrate
 from models import UserModel
+from flask_seeder import FlaskSeeder
 
 app = Flask(__name__)
 
@@ -20,6 +21,10 @@ db.init_app(app)
 
 # Migrations
 migrate = Migrate(app, db)
+
+# Seeds
+seeder = FlaskSeeder()
+seeder.init_app(app, db)
 
 @app.route('/')
 def hello_world():
