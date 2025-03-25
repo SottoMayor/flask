@@ -22,41 +22,23 @@ Rodar em DEV: `flask run`
 ````
 
 meu_app/
-
 ├── middlewares
-
 ├── models -> Entidades
-
 ├── services -> Regras de negócio
-
 ├── controllers -> Blueprints
-
 └── database
-
 ├── connection -> conexão com SQLAlchemy
-
 ├── migrations -> gerenciado pelo Flask-Migrate
-
 └── seeds -> gerenciado pelo Flask-Seeder
-
 └── settings
-
 └── env.py -> Declaração de variáveis de ambiente
-
 ├── app.py -> arquivo de entrada
-
 ├── .flaskenv -> .env de DEV
-
 ├── .env
-
 ├── requirements.txt
-
 ├── Dockerfile
-
 ├── docker-compose -> DEV
-
 ├── .dockerignore
-
 └── .gitignore
 
 ````
@@ -353,6 +335,8 @@ Crie a pasta `models` para abrigar cada model.
 
 - A inicialização do DB com `db.init_app(app)` deve ocorrer após a definição das variáveis de ambiente.
 
+- Os models devem ser importados no antes da inicialização do SqlAlchemy.
+
   
 
 ## Migrations
@@ -581,3 +565,62 @@ seeder.init_app(app, db)
 flask seed run --root database/seeds
 
 ```
+
+## Roteamento e Documentação da API
+[Documentação oficial do Flask-Smorest](https://flask-smorest.readthedocs.io/)
+
+1. **Instalação do Flask-Smorest**
+  ```bash
+  
+   pip install flask-smorest
+   
+  ```
+
+2. **Organização e Criação de Blueprints**
+- Crie a pasta `controllers/` para abrigar os blueprints.
+- Os blueprints fazem o roteamento do app.
+- Um blueprint pode ter várias classes decoradas com `@blp.route(...)` e herdando de `MethodView`.
+- Os blueprints seguem o padrão Class-Based Views (conceito usado no [Django](https://docs.djangoproject.com/en/5.1/topics/class-based-views/intro/)).
+- Os services carregam as regras de negócio e são utilizados nos blueprints.
+
+3. **Variáveis de Ambiente**
+- Variáveis de ambiente obrigatórias para habilitar a documentação:
+     ```bash
+     
+     API_TITLE=Minha API
+     API_VERSION=v1
+     OPENAPI_VERSION=3.0.3
+     
+     ```
+- Variáveis de ambiente que disponibilizam o endpoint da documentação:
+
+     ```bash
+     
+     OPENAPI_URL_PREFIX=/swagger
+     OPENAPI_SWAGGER_UI_PATH=/api
+     OPENAPI_SWAGGER_UI_URL=https://cdn.jsdelivr.net/npm/swagger-ui-dist/
+     
+     ```
+     - Acesse a doc. pela URL `/swagger/api`
+
+- Dicas:
+     - Use a variável `PROPAGATE_EXCEPTIONS=True` para que o `app.py` consiga capturar as exceções que ocorreram em outras extensões do Flask, como em blueprints.
+     - Existem outras variáveis que são usadas para melhorar a documentação.
+
+4. **Conexão dos Blueprints no `app.py`**
+- Importe `Api` e os blueprints:
+     ```python
+     
+     from flask_smorest import Api
+     from controllers.hello import blp as HelloBlueprint   
+
+     ```
+     - Dica: defina um apelido para os `blp's` importados.
+
+- Instancie `Api` e registre os blueprints:
+     ```python
+
+     api = Api(app)
+     api.register_blueprint(HelloBlueprint)
+     
+     ```
