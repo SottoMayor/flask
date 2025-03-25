@@ -548,7 +548,7 @@ seeder = FlaskSeeder()
 
 - A inicialização das seeds deve ocorrer após a conexão com o banco e, preferencialmente, migrations.
 
-```
+```python
 
 seeder.init_app(app, db)
 
@@ -570,11 +570,11 @@ flask seed run --root database/seeds
 [Documentação oficial do Flask-Smorest](https://flask-smorest.readthedocs.io/)
 
 1. **Instalação do Flask-Smorest**
-  ```bash
-  
-   pip install flask-smorest
-   
-  ```
+```bash
+
+pip install flask-smorest
+
+```
 
 2. **Organização e Criação de Blueprints**
 - Crie a pasta `controllers/` para abrigar os blueprints.
@@ -624,3 +624,19 @@ flask seed run --root database/seeds
      api.register_blueprint(HelloBlueprint)
      
      ```
+
+## Middlewares
+
+- Organizados dentro da pasta `middlewares/`, separados por responsabilidade.
+- Cada arquivo `*_middleware.py` define uma função `*_middleware(app)` que recebe a instância do Flask.
+- Essas funções registram os hooks do Flask que disparam **antes** e **depois** da requisição.
+
+### Tipos de hooks suportados
+
+- `@app.before_request` → executa antes de cada requisição (**ordem FIFO**)
+- `@app.after_request` → executa após cada requisição (**ordem LIFO**)
+
+### Uso no `app.py`
+
+- Importe as middlewares e invoque-as **antes dos blueprints**.
+- A ordem de registro **define a ordem de execução**, então mantenha organizado.

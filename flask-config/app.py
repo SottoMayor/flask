@@ -6,6 +6,7 @@ import models
 from flask_seeder import FlaskSeeder
 from flask_smorest import Api
 from controllers.user import blp as UserBlueprint
+from middlewares.log_middleware import log_middleware
 
 app = Flask(__name__)
 
@@ -17,7 +18,6 @@ app.config.from_pyfile('settings/env.py')
 FLASK_APP = app.config['FLASK_APP']
 FLASK_HOST = app.config['FLASK_HOST']
 FLASK_PORT = app.config['FLASK_PORT']
-OPENAPI_SWAGGER_UI_PATH = app.config['OPENAPI_SWAGGER_UI_PATH']
 
 # DB
 db.init_app(app)
@@ -28,6 +28,9 @@ migrate = Migrate(app, db)
 # Seeds
 seeder = FlaskSeeder()
 seeder.init_app(app, db)
+
+# Middlewares
+log_middleware(app)
 
 # Blueprints
 api = Api(app)
